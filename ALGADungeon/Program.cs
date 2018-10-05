@@ -11,6 +11,9 @@ namespace ConsoleApp1
         static void Main(string[] args)
         {
             Graph graph = new Graph();
+            graph.GenerateRandomGraph(5, 5);
+
+            Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
             
             // legend
             Console.WriteLine(

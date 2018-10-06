@@ -33,17 +33,20 @@ namespace ConsoleApp1
         {
             String printState = " ";
 
-            if (state == 0)
+            switch (state)
             {
-                printState = visiting ? "X" : "S";
-            }
-            else if (state == 1)
-            {
-                printState = "X";
-            }
-            else if (state == 4)
-            {
-                printState = "E";
+                case 0:
+                    printState = visiting ? "X" : "S";
+                    break;
+                case 1:
+                    printState = "X";
+                    break;
+                case 2:
+                    printState = "*";
+                    break;
+                case 4:
+                    printState = "E";
+                    break;
             }
 
             if (this.rightEdge != null)

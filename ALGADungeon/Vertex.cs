@@ -25,37 +25,65 @@ namespace ConsoleApp1
             visiting = false;
         }
 
-        public string Print()
+        public void Print()
         {
             String printState = " ";
 
+            Console.ResetColor();
             switch (state)
             {
                 case 0:
-                    printState = visiting ? "X" : "S";
+                    if (visiting)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        printState = "X";
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        printState = "S";
+                    }
+
                     break;
                 case 1:
+                    Console.ForegroundColor = ConsoleColor.Blue;
                     printState = "X";
                     break;
                 case 2:
+                    Console.ForegroundColor = ConsoleColor.DarkBlue;
                     printState = "*";
                     break;
                 case 4:
-                    printState = visiting ? "X" : "E";
+                    if (visiting)
+                    {
+                        Console.ForegroundColor = ConsoleColor.Blue;
+                        printState = "X";
+                    }
+                    else
+                    {
+                        Console.ForegroundColor = ConsoleColor.Red;
+                        printState = "E";
+                    }
                     break;
             }
 
-            if (this.rightEdge != null)
+            if (rightEdge != null)
             {
-                return "    " + printState + "    ___" + rightEdge.level + "___" + rightEdge.rightVertex.Print();
+                Console.Write("    " + printState);
+                Console.ResetColor();
+                Console.Write("    ___" + rightEdge.level + "___");
+                rightEdge.rightVertex.Print();
             }
-
-            return "    " + printState + "    ";
+            else
+            {
+                Console.Write("    " + printState + "    ");
+                Console.ResetColor();
+            }
         }
 
         public string PrintEdge()
         {
-            if (this.rightEdge != null)
+            if (rightEdge != null)
             {
                 return "   |" + downEdge.level + "|          " + rightEdge.rightVertex.PrintEdge();
             }

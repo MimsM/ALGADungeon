@@ -205,7 +205,9 @@ namespace ALGADungeon
 
         public void Print(Vertex v)
         {
-            Console.WriteLine(xRoomTop + "\n" + xRoomUp + "\n" + v.Print() + "\n" + xRoomDown + "\n" + xRoomTop);
+            Console.WriteLine(xRoomTop + "\n" + xRoomUp);
+            v.Print();
+            Console.WriteLine("\n" + xRoomDown + "\n" + xRoomTop);
 
             if (v.downEdge != null)
             {

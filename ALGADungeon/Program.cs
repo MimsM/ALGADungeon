@@ -108,14 +108,18 @@ namespace ALGADungeon
         private static void DrawLevel(Graph graph)
         {
             //Create legend
-            Console.WriteLine(
-                "S = Room: Startpunt \n" +
-                "E = Room: Eindpunt \n" +
-                "X = Room: Hier ben je nu \n" +
-                "* = Room: Bezocht \n" +
-                "~ = Hallway: Ingestort \n" +
-                "0 = Hallway: Level tegenstander(cost)\n"
-            );
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("S = Room: Startpunt");
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine("E = Room: Eindpunt");
+            Console.ForegroundColor = ConsoleColor.Blue;
+            Console.WriteLine("X = Room: Hier ben je nu");
+            Console.ForegroundColor = ConsoleColor.DarkBlue;
+            Console.WriteLine("* = Room: Bezocht");
+            Console.ResetColor();
+            Console.WriteLine("~ = Hallway: Ingestort");
+            Console.WriteLine("0 = Hallway: Level tegenstander(cost)\n");
 
             //Print graph
             graph.Print(graph.root);

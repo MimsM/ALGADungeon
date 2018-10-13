@@ -12,6 +12,7 @@ namespace ALGADungeon
             while (true)
             {
                 Console.WriteLine("Console acties: quit, reset \n" +
+                                  "Game acties: right, left, down, up \n" +
                                   "Items: talisman");
                 string playerInput = Console.ReadLine();
 
@@ -24,11 +25,81 @@ namespace ALGADungeon
                         Console.Clear();
                         graph = Init();
                         break;
+                    case "right":
+                        Console.Clear();
+                        if (graph.current.rightEdge != null)
+                        {
+                            graph.GoDirection(2);
+
+                            //Redraw level
+                            DrawLevel(graph);
+                        }
+                        else
+                        {
+                            //Redraw level
+                            DrawLevel(graph);
+
+                            Console.WriteLine("You can't go right!\n");
+                        }
+                        break;
+                    case "left":
+                        Console.Clear();
+                        if (graph.current.leftEdge != null)
+                        {
+                            graph.GoDirection(4);
+
+                            //Redraw level
+                            DrawLevel(graph);
+                        }
+                        else
+                        {
+                            //Redraw level
+                            DrawLevel(graph);
+
+                            Console.WriteLine("You can't go left!\n");
+                        }
+                        break;
+                    case "up":
+                        Console.Clear();
+                        if (graph.current.upEdge != null)
+                        {
+                            graph.GoDirection(1);
+
+                            //Redraw level
+                            DrawLevel(graph);
+                        }
+                        else
+                        {
+                            //Redraw level
+                            DrawLevel(graph);
+
+                            Console.WriteLine("You can't go up!\n");
+                        }
+                        break;
+                    case "down":
+                        Console.Clear();
+                        if (graph.current.downEdge != null)
+                        {
+                            graph.GoDirection(3);
+
+                            //Redraw level
+                            DrawLevel(graph);
+                        }
+                        else
+                        {
+                            //Redraw level
+                            DrawLevel(graph);
+
+                            Console.WriteLine("You can't go down!\n");
+                        }
+                        break;
                     case "talisman":
                         Console.Clear();
                         DrawLevel(graph);
 
-                        Console.WriteLine("De talisman licht op en fluistert dat het eindpunt n stappen ver weg is \n");
+                        int n = graph.TalismanBFS();
+
+                        Console.WriteLine("De talisman licht op en fluistert dat het eindpunt " + n + " stappen ver weg is \n");
                         break;
                 }
             }
@@ -47,7 +118,7 @@ namespace ALGADungeon
             );
 
             //Print graph
-            graph.Print(graph.current);
+            graph.Print(graph.root);
             Console.WriteLine("\n");
         }
 
@@ -56,8 +127,10 @@ namespace ALGADungeon
             //Init
             Graph graph = new Graph();
             Console.SetWindowSize(Console.LargestWindowWidth, Console.LargestWindowHeight);
-            int x = 0;
-            int y = 0;
+
+            bool startStopInitialised = false;
+            int x, y, startX, startY, endX, endY;
+            x = y = startX = startY = endX = endY = 0;
 
             //Await user x input
             while (x == 0)
@@ -82,13 +155,92 @@ namespace ALGADungeon
                 }
             }
 
-            //Clear console
+            //Await user start/endpoint input
+            while (!startStopInitialised)
+            {
+                Console.WriteLine("Do you want a default, random or custom start/endpoint? (type: default, random or custom)");
+                string playerInput = Console.ReadLine();
+
+                switch (playerInput)
+                {
+                    //Generate graph with user input
+                    case "default":
+                        graph.GenerateRandomGraph(x, y, 0, 0, x - 1, y - 1);
+                        startStopInitialised = true;
+                        break;
+                    case "":
+                        graph.GenerateRandomGraph(x, y, 0, 0, x - 1, y - 1);
+                        startStopInitialised = true;
+                        break;
+                    case "random":
+                        graph.GenerateRandomGraph(x, y, graph.RandomNumber(0, x - 1), graph.RandomNumber(0, y - 1),
+                            graph.RandomNumber(0, x - 1), graph.RandomNumber(0, y - 1));
+                        startStopInitialised = true;
+                        break;
+                    case "custom":
+                        //Await user start x input
+                        while (startX == 0)
+                        {
+                            Console.WriteLine("Please provide a value between 1 and " + x + " (starting point x value)");
+
+                            if (int.TryParse(Console.ReadLine(), out int result))
+                            {
+                                if (result >= 1 && result <= x)
+                                    startX = result;
+                            }
+                        }
+                        //Await user start y input
+                        while (startY == 0)
+                        {
+                            Console.WriteLine("Please provide a value between 1 and " + y + " (starting point y value)");
+
+                            if (int.TryParse(Console.ReadLine(), out int result))
+                            {
+                                if (result >= 1 && result <= y)
+                                    startY = result;
+                            }
+                        }
+
+                        //Await user end x input
+                        while (endX == 0)
+                        {
+                            Console.WriteLine("Please provide a value between 1 and " + x + " (end point x value)");
+
+                            if (int.TryParse(Console.ReadLine(), out int result))
+                            {
+                                if (result >= 1 && result <= x)
+                                    endX = result;
+                            }
+                        }
+                        //Await user end y input
+                        while (endY == 0)
+                        {
+                            Console.WriteLine("Please provide a value between 1 and " + y + " (end point y value)");
+
+                            if (int.TryParse(Console.ReadLine(), out int result))
+                            {
+                                if (result >= 1 && result <= y)
+                                {
+                                    if (startX == endX && startY == result)
+                                    {
+                                        Console.WriteLine("Starting point and end point can't be the same");
+                                    }
+                                    else
+                                    {
+                                        endY = result;
+                                    }
+                                }
+                            }
+                        }
+
+                        graph.GenerateRandomGraph(x, y, startX - 1, startY - 1, endX - 1, endY - 1);
+                        startStopInitialised = true;
+                        break;
+                }
+            }
+
+            //Clear console and draw level
             Console.Clear();
-
-            //Generate graph with user input
-            graph.GenerateRandomGraph(x, y);
-
-            //Draw level
             DrawLevel(graph);
 
             return graph;

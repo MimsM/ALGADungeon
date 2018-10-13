@@ -9,24 +9,20 @@ namespace ConsoleApp1
     {
         // states: 0 = starting point, 1 = visiting, 2 = visited, 3 = not visited, 4 = end point
         public int state { get; set; }
+        public string name { get; set; }
         public Edge leftEdge { get; set; }
         public Edge rightEdge { get; set; }
         public Edge upEdge { get; set; }
         public Edge downEdge { get; set; }
         public bool visiting { get; set; }
+        public HashSet<Vertex> adjacentVertices { get; set; }
 
-        public Vertex(int state)
+        public Vertex(int state, string name)
         {
+            adjacentVertices = new HashSet<Vertex>();
             this.state = state;
-
-            if (state == 1)
-            {
-                visiting = true;
-            }
-            else
-            {
-                visiting = false;
-            }
+            this.name = name;
+            visiting = false;
         }
 
         public string Print()
@@ -45,7 +41,7 @@ namespace ConsoleApp1
                     printState = "*";
                     break;
                 case 4:
-                    printState = "E";
+                    printState = visiting ? "X" : "E";
                     break;
             }
 

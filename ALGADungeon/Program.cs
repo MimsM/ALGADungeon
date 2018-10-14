@@ -113,7 +113,7 @@ namespace ALGADungeon
                         DrawLevel(graph);
 
                         Console.WriteLine("De kerker schudt op zijn grondvesten, de tegenstander in een aangrenzende hallway is vermorzeld! \n" +
-                            "Een donderend geluid maakt duidelijk dat gedeeltes van de kerker zijn ingestort...");
+                            "Een donderend geluid maakt duidelijk dat gedeeltes van de kerker zijn ingestort... \n");
                         break;
                 }
             }

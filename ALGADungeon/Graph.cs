@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Security;
 using System.Text;
 using ConsoleApp1;
@@ -13,10 +14,7 @@ namespace ALGADungeon
         public Vertex start { get; set; }
         public Vertex end { get; set; }
         public Vertex current { get; set; }
-        public List<Vertex> visited { get; set; }
-
-        private int x;
-        private int y;
+        //public List<Vertex> visited { get; set; }
         
         // pre-drawing variables
         public String xEdges = "";
@@ -27,91 +25,189 @@ namespace ALGADungeon
 
         public Graph()
         {
-            x = 3;
-            y = 2;
-            DrawMap();
-
-            //generate predefined graph
-            Vertex n1 = new Vertex(0);
-            Vertex n2 = new Vertex(1);
-            Vertex n3 = new Vertex(3);
-            Vertex n4 = new Vertex(3);
-            Vertex n5 = new Vertex(3);
-            Vertex n6 = new Vertex(3);
-            Vertex n7 = new Vertex(3);
-            Vertex n8 = new Vertex(3);
-            Vertex n9 = new Vertex(4);
-
-            n1.downEdge = new Edge(2, n1, n4);
-            n1.rightEdge = new Edge(5, n1, n2);
-
-            n2.leftEdge = n1.rightEdge;
-            n2.downEdge = new Edge(4, n2, n5);
-            n2.rightEdge = new Edge(4, n2, n3);
-
-            n3.leftEdge = n2.rightEdge;
-            n3.downEdge = new Edge(6, n3, n6);
-
-            n4.upEdge = n1.downEdge;
-            n4.rightEdge = new Edge(3, n4, n5);
-            n4.downEdge = new Edge(2, n4, n7);
-
-            n5.leftEdge = n4.rightEdge;
-            n5.upEdge = n2.downEdge;
-            n5.rightEdge = new Edge(8, n5, n6);
-            n5.downEdge = new Edge(3, n5, n8);
-
-            n6.leftEdge = n5.rightEdge;
-            n6.upEdge = n3.downEdge;
-            n6.downEdge = new Edge(4, n6, n9);
-
-            n7.upEdge = n4.downEdge;
-            n7.rightEdge = new Edge(8, n7, n8);
-
-            n8.leftEdge = n7.rightEdge;
-            n8.upEdge = n5.downEdge;
-            n8.rightEdge = new Edge(2, n8, n9);
-
-            n9.leftEdge = n8.rightEdge;
-            n9.upEdge = n6.downEdge;
-
-            root = n1;
-            start = n1;
-            end = n9;
-            current = n1;
-
-            vertices.Add(n1);
-            vertices.Add(n2);
-            vertices.Add(n3);
-            vertices.Add(n4);
-            vertices.Add(n5);
-            vertices.Add(n6);
-            vertices.Add(n7);
-            vertices.Add(n8);
-            vertices.Add(n9);
         }
 
-        public Graph(Vertex start, Vertex end)
+        //generate graph with no of x and y elements + start/endpoint
+        public void GenerateRandomGraph(int x, int y, int startX, int startY, int endX, int endY)
         {
-            DrawMap();
-            this.start = start;
-            this.end = end;
-            root = start;
-            x = 3;
-            x = y;
+            if (x > 1 && x <= 12 && y > 1 && y <= 5)
+            {
+                Vertex[,] grid = new Vertex[x, y];
+
+                for (int row = 0; row < y; row++)
+                {
+                    for (int column = 0; column < x; column++)
+                    {
+                        //Create vertices with a state and name
+                        grid[column, row] = new Vertex(3, "y" + (row + 1) + " x" + (column + 1));
+
+                        //Create edges
+
+                        //First row all horizontal edges
+                        if (row == 0 && column >= 1)
+                        {
+                            //First create right edge of previous vertex in same row
+                            grid[column - 1, row].rightEdge =
+                                new Edge(RandomNumber(1,9), grid[column - 1, row], grid[column, row]);
+                            
+                            //Then set leftEdge of current vertex to previous vertex's rightEdge
+                            grid[column, row].leftEdge = grid[column - 1, row].rightEdge;
+
+                            //Add to adjacency list
+                            grid[column - 1, row].adjacentVertices.Add(grid[column, row]);
+                            grid[column, row].adjacentVertices.Add(grid[column - 1, row]);
+                        }
+                        //Other rows and edges
+                        else if (row >= 1)
+                        {
+                            //First create down edge of vertex in same column but previous row
+                            grid[column, row - 1].downEdge = new Edge(RandomNumber(1,9), grid[column, row - 1], grid[column, row]);
+
+                            //Then set upEdge of current vertex to previous vertex's downEdge
+                            grid[column, row].upEdge = grid[column, row - 1].downEdge;
+
+                            //Add to adjacency list
+                            grid[column, row - 1].adjacentVertices.Add(grid[column, row]);
+                            grid[column, row].adjacentVertices.Add(grid[column, row - 1]);
+
+                            if (column >= 1)
+                            {
+                                //Create horizontal edges like first row
+                                grid[column - 1, row].rightEdge =
+                                    new Edge(RandomNumber(1,9), grid[column - 1, row], grid[column, row]);
+                                grid[column, row].leftEdge = grid[column - 1, row].rightEdge;
+
+                                //Add to adjacency list
+                                grid[column - 1, row].adjacentVertices.Add(grid[column, row]);
+                                grid[column, row].adjacentVertices.Add(grid[column - 1, row]);
+                            }
+                        }
+
+                        vertices.Add(grid[column, row]);
+                    }
+                }
+                //Create start
+                start = current = grid[startX, startY];
+                start.state = 0;
+                start.visiting = true;
+
+                //Create end
+                end = grid[endX, endY];
+
+                //If start == end -> find another end
+                while (end.name.Equals(start.name))
+                {
+                    end = grid[RandomNumber(0, x - 1), RandomNumber(0, y - 1)];
+                }
+                end.state = 4;
+
+                root = grid[0, 0];
+
+                DrawMap(x);
+            }
+            else
+            {
+                Console.WriteLine(
+                    "Out of bounds: \n" +
+                    "X must be between 2 and 12 \n" +
+                    "Y must be between 2 and 5 \n"
+                );
+            }
         }
 
-        public Graph(int x, int y)
+        public int RandomNumber(int min, int max)
         {
-            DrawMap();
-            this.x = x;
-            this.y = y;
-            //generate graph with no of x and y elements
+            Random rnd = new Random();
+            return rnd.Next(min, max + 1);
+        }
+
+        public void GoDirection(int direction)
+        {
+            //Set old vertex to visited 
+            current.visiting = false;
+            if (current.state != 0 && current.state != 4)
+            {
+                current.state = 2;
+            }
+
+            //Change vertex
+            switch (direction)
+            {
+                case 1:
+                    current = current.upEdge.leftVertex;
+                    break;
+                case 2:
+                    current = current.rightEdge.rightVertex;
+                    break;
+                case 3:
+                    current = current.downEdge.rightVertex;
+                    break;
+                case 4:
+                    current = current.leftEdge.leftVertex;
+                    break;
+            }
+
+            //Set new vertex to visiting
+            if (current.state != 0 && current.state != 4)
+            {
+                current.state = 1;
+            }
+            current.visiting = true;
+        }
+
+        public int TalismanBFS()
+        {
+            int depth = 0;
+            int elementsToDepthIncrease = 1;
+            int nextElementsToDepthIncrease = 0;
+            Queue<Vertex> queue = new Queue<Vertex>();
+            HashSet<Vertex> visited = new HashSet<Vertex>();
+            
+            //Add current vertex to queue
+            queue.Enqueue(current);
+
+            while (queue.Count != 0)
+            {
+                //Remove vertex from queue and add it to visited list
+                Vertex vertex = queue.Dequeue();
+                visited.Add(vertex);
+
+                //If visited vertex is endpoint -> return
+                if (vertex.name.Equals(end.name))
+                {
+                    return depth;
+                }
+
+                Debug.WriteLine("Visiting vertex " + vertex.name);
+
+                //Loop trough adjacentVertices
+                foreach (Vertex adjacentVertex in vertex.adjacentVertices)
+                {
+                    if (!visited.Contains(adjacentVertex) && !queue.Contains(adjacentVertex))
+                    {
+                        queue.Enqueue(adjacentVertex);
+                        nextElementsToDepthIncrease++;
+                    }
+                }
+
+                //Calculate depth
+                elementsToDepthIncrease--;
+                if (elementsToDepthIncrease == 0)
+                {
+                    depth++;
+                    elementsToDepthIncrease = nextElementsToDepthIncrease;
+                    nextElementsToDepthIncrease = 0;
+                }
+            }
+
+            return depth;
         }
 
         public void Print(Vertex v)
         {
-            Console.WriteLine(xRoomTop + "\n" + xRoomUp + "\n" + v.Print() + "\n" + xRoomDown + "\n" + xRoomTop);
+            Console.WriteLine(xRoomTop + "\n" + xRoomUp);
+            v.Print();
+            Console.WriteLine("\n" + xRoomDown + "\n" + xRoomTop);
 
             if (v.downEdge != null)
             {
@@ -121,7 +217,7 @@ namespace ALGADungeon
             }
         }
 
-        public void DrawMap()
+        public void DrawMap(int x)
         {
             // pre-drawing
             for (var i = 0; i < x - 1; i++)

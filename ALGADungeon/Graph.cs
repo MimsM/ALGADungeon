@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Security;
 using System.Text;
 using ConsoleApp1;
@@ -10,7 +11,9 @@ namespace ALGADungeon
     class Graph
     {
         public Vertex root { get; set; }
-        public List<Vertex> vertices = new List<Vertex>();
+        public List<Vertex> vertices { get; set; }
+        public List<Edge> edges { get; set; }
+        public List<Edge> MST { get; set; }
         public Vertex start { get; set; }
         public Vertex end { get; set; }
         public Vertex current { get; set; }
@@ -25,11 +28,15 @@ namespace ALGADungeon
 
         public Graph()
         {
+            vertices = new List<Vertex>();
+            edges = new List<Edge>();
+            MST = new List<Edge>();
         }
 
         //generate graph with no of x and y elements + start/endpoint
         public void GenerateRandomGraph(int x, int y, int startX, int startY, int endX, int endY)
         {
+            int number = 1;
             if (x > 1 && x <= 12 && y > 1 && y <= 5)
             {
                 Vertex[,] grid = new Vertex[x, y];
@@ -39,7 +46,8 @@ namespace ALGADungeon
                     for (int column = 0; column < x; column++)
                     {
                         //Create vertices with a state and name
-                        grid[column, row] = new Vertex(3, "y" + (row + 1) + " x" + (column + 1));
+                        grid[column, row] = new Vertex(3, "y" + (row + 1) + " x" + (column + 1)) {number = number};
+                        number++;
 
                         //Create edges
 
@@ -49,6 +57,9 @@ namespace ALGADungeon
                             //First create right edge of previous vertex in same row
                             grid[column - 1, row].rightEdge =
                                 new Edge(RandomNumber(1,9), grid[column - 1, row], grid[column, row]);
+
+                            //Add to edge list
+                            edges.Add(grid[column - 1, row].rightEdge);
                             
                             //Then set leftEdge of current vertex to previous vertex's rightEdge
                             grid[column, row].leftEdge = grid[column - 1, row].rightEdge;
@@ -63,6 +74,9 @@ namespace ALGADungeon
                             //First create down edge of vertex in same column but previous row
                             grid[column, row - 1].downEdge = new Edge(RandomNumber(1,9), grid[column, row - 1], grid[column, row]);
 
+                            //Add to edge list
+                            edges.Add(grid[column, row - 1].downEdge);
+
                             //Then set upEdge of current vertex to previous vertex's downEdge
                             grid[column, row].upEdge = grid[column, row - 1].downEdge;
 
@@ -76,6 +90,9 @@ namespace ALGADungeon
                                 grid[column - 1, row].rightEdge =
                                     new Edge(RandomNumber(1,9), grid[column - 1, row], grid[column, row]);
                                 grid[column, row].leftEdge = grid[column - 1, row].rightEdge;
+
+                                //Add to edge list
+                                edges.Add(grid[column - 1, row].rightEdge);
 
                                 //Add to adjacency list
                                 grid[column - 1, row].adjacentVertices.Add(grid[column, row]);
@@ -203,16 +220,85 @@ namespace ALGADungeon
             return depth;
         }
 
+        public void MinimumSpanningTree()
+        {
+            //Kruskal
+            //Vertex mstStart = vertices[RandomNumber(0, vertices.Count - 1)];
+            //Vertex[] parent = new Vertex[vertices.Count];
+            //Queue<Edge> edges = new Queue<Edge>();
+            //parent[0] = mstStart;
+
+            //if(mstStart.rightEdge != null)
+            //    edges.Enqueue(mstStart.rightEdge);
+            //if (mstStart.leftEdge != null)
+            //    edges.Enqueue(mstStart.leftEdge);
+            //if (mstStart.upEdge != null)
+            //    edges.Enqueue(mstStart.upEdge);
+            //if (mstStart.downEdge != null)
+            //    edges.Enqueue(mstStart.downEdge);
+
+            // Inital sort
+            edges = edges.OrderBy(x => x.level).ToList();
+
+            // Set parents table
+            int[] parent = Enumerable.Range(0, vertices.Count + 1).ToArray();
+
+            // Spanning tree list
+            List<Edge> spanningTree = new List<Edge>();
+            foreach (var edge in edges)
+            {
+                var startNodeRoot = FindRoot(edge.leftVertex.number, parent);
+                var endNodeRoot = FindRoot(edge.rightVertex.number, parent);
+
+                if (startNodeRoot != endNodeRoot)
+                {
+                    // Add edge to the spanning tree
+                    spanningTree.Add(edge);
+
+                    // Mark one root as parent of the other
+                    parent[endNodeRoot] = startNodeRoot;
+                }
+            }
+
+            // Return the spanning tree
+            foreach (Edge edge in spanningTree)
+            {
+                Debug.WriteLine("From: " + edge.leftVertex.number + " to: " + edge.rightVertex.number);
+            }
+
+            MST = spanningTree;
+        }
+
+        private int FindRoot(int node, int[] parent)
+        {
+            int kRoot = node;
+            while (kRoot != parent[kRoot])
+            {
+                kRoot = parent[kRoot];
+            }
+
+            while (node != kRoot)
+            {
+                var oldParent = parent[node];
+                parent[node] = kRoot;
+                node = oldParent;
+            }
+
+            return kRoot;
+        }
+
         public void Print(Vertex v)
         {
             Console.WriteLine(xRoomTop + "\n" + xRoomUp);
-            v.Print();
+            v.Print(MST);
             Console.WriteLine("\n" + xRoomDown + "\n" + xRoomTop);
 
             if (v.downEdge != null)
             {
-                Console.WriteLine(xEdges + "\n" + v.PrintEdge() + "\n" + xEdges);
-
+                //Console.WriteLine(xEdges + "\n" + v.PrintEdge() + "\n" + xEdges);
+                Console.WriteLine(xEdges);
+                v.PrintEdge(MST);
+                Console.WriteLine("\n" + xEdges);
                 Print(v.downEdge.rightVertex);
             }
         }

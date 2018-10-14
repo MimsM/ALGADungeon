@@ -10,6 +10,7 @@ namespace ConsoleApp1
         // states: 0 = starting point, 1 = visiting, 2 = visited, 3 = not visited, 4 = end point
         public int state { get; set; }
         public string name { get; set; }
+        public int number { get; set; }
         public Edge leftEdge { get; set; }
         public Edge rightEdge { get; set; }
         public Edge upEdge { get; set; }
@@ -25,7 +26,7 @@ namespace ConsoleApp1
             visiting = false;
         }
 
-        public void Print()
+        public void Print(List<Edge> MST)
         {
             String printState = " ";
 
@@ -71,8 +72,11 @@ namespace ConsoleApp1
             {
                 Console.Write("    " + printState);
                 Console.ResetColor();
+                if (InSpanningTree(rightEdge, MST))
+                    Console.ForegroundColor = ConsoleColor.Magenta;
                 Console.Write("    ___" + rightEdge.level + "___");
-                rightEdge.rightVertex.Print();
+                Console.ResetColor();
+                rightEdge.rightVertex.Print(MST);
             }
             else
             {
@@ -81,14 +85,37 @@ namespace ConsoleApp1
             }
         }
 
-        public string PrintEdge()
+        public void PrintEdge(List<Edge> MST)
         {
             if (rightEdge != null)
             {
-                return "   |" + downEdge.level + "|          " + rightEdge.rightVertex.PrintEdge();
+                if(InSpanningTree(downEdge, MST))
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write("   |" + downEdge.level + "|          ");
+                Console.ResetColor();
+                rightEdge.rightVertex.PrintEdge(MST);
+            }
+            else
+            {
+                if (InSpanningTree(downEdge, MST))
+                    Console.ForegroundColor = ConsoleColor.Magenta;
+                Console.Write("   |" + downEdge.level + "|");
+                Console.ResetColor();
+            }
+        }
+
+        public bool InSpanningTree(Edge edge, List<Edge> MST)
+        {
+            foreach (Edge e in MST)
+            {
+                if (edge.leftVertex.number == e.leftVertex.number
+                    && edge.rightVertex.number == e.rightVertex.number)
+                {
+                    return true;
+                }
             }
 
-            return "   |" + downEdge.level + "|";
+            return false;
         }
     }
 }

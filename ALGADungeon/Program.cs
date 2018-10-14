@@ -101,6 +101,15 @@ namespace ALGADungeon
 
                         Console.WriteLine("De talisman licht op en fluistert dat het eindpunt " + n + " stappen ver weg is \n");
                         break;
+                    case "handgranaat":
+                        Console.Clear();
+                        DrawLevel(graph);
+
+                        //graph.MinimumSpanningTree();
+
+                        Console.WriteLine("De kerker schudt op zijn grondvesten, de tegenstander in een aangrenzende hallway is vermorzeld! \n" +
+                            "Een donderend geluid maakt duidelijk dat gedeeltes van de kerker zijn ingestort...");
+                        break;
                 }
             }
         }
@@ -245,6 +254,7 @@ namespace ALGADungeon
 
             //Clear console and draw level
             Console.Clear();
+            graph.MinimumSpanningTree();
             DrawLevel(graph);
 
             return graph;

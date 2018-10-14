@@ -11,9 +11,9 @@ namespace ALGADungeon
             //Game loop
             while (true)
             {
-                Console.WriteLine("Console acties: quit, reset \n" +
+                Console.WriteLine("Console acties: quit, reset, nuke \n" +
                                   "Game acties: right, left, down, up \n" +
-                                  "Items: talisman");
+                                  "Items: talisman, handgranaat");
                 string playerInput = Console.ReadLine();
 
                 switch (playerInput)
@@ -25,9 +25,14 @@ namespace ALGADungeon
                         Console.Clear();
                         graph = Init();
                         break;
+                    case "nuke":
+                        Console.Clear();
+                        graph.Nuke();
+                        DrawLevel(graph);
+                        break;
                     case "right":
                         Console.Clear();
-                        if (graph.current.rightEdge != null)
+                        if (graph.current.rightEdge != null && graph.current.rightEdge.state != -1)
                         {
                             graph.GoDirection(2);
 
@@ -44,7 +49,7 @@ namespace ALGADungeon
                         break;
                     case "left":
                         Console.Clear();
-                        if (graph.current.leftEdge != null)
+                        if (graph.current.leftEdge != null && graph.current.leftEdge.state != -1)
                         {
                             graph.GoDirection(4);
 
@@ -61,7 +66,7 @@ namespace ALGADungeon
                         break;
                     case "up":
                         Console.Clear();
-                        if (graph.current.upEdge != null)
+                        if (graph.current.upEdge != null && graph.current.upEdge.state != -1)
                         {
                             graph.GoDirection(1);
 
@@ -78,7 +83,7 @@ namespace ALGADungeon
                         break;
                     case "down":
                         Console.Clear();
-                        if (graph.current.downEdge != null)
+                        if (graph.current.downEdge != null && graph.current.downEdge.state != -1)
                         {
                             graph.GoDirection(3);
 
@@ -103,9 +108,9 @@ namespace ALGADungeon
                         break;
                     case "handgranaat":
                         Console.Clear();
-                        DrawLevel(graph);
 
-                        //graph.MinimumSpanningTree();
+                        graph.Grenade();
+                        DrawLevel(graph);
 
                         Console.WriteLine("De kerker schudt op zijn grondvesten, de tegenstander in een aangrenzende hallway is vermorzeld! \n" +
                             "Een donderend geluid maakt duidelijk dat gedeeltes van de kerker zijn ingestort...");
@@ -126,8 +131,9 @@ namespace ALGADungeon
             Console.WriteLine("X = Room: Hier ben je nu");
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine("* = Room: Bezocht");
-            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("~ = Hallway: Ingestort");
+            Console.ResetColor();
             Console.WriteLine("0 = Hallway: Level tegenstander(cost)\n");
 
             //Print graph

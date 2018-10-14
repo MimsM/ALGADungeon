@@ -222,20 +222,7 @@ namespace ALGADungeon
 
         public void MinimumSpanningTree()
         {
-            //Kruskal
-            //Vertex mstStart = vertices[RandomNumber(0, vertices.Count - 1)];
-            //Vertex[] parent = new Vertex[vertices.Count];
-            //Queue<Edge> edges = new Queue<Edge>();
-            //parent[0] = mstStart;
-
-            //if(mstStart.rightEdge != null)
-            //    edges.Enqueue(mstStart.rightEdge);
-            //if (mstStart.leftEdge != null)
-            //    edges.Enqueue(mstStart.leftEdge);
-            //if (mstStart.upEdge != null)
-            //    edges.Enqueue(mstStart.upEdge);
-            //if (mstStart.downEdge != null)
-            //    edges.Enqueue(mstStart.downEdge);
+            //Kruskal minimum spanning tree
 
             // Inital sort
             edges = edges.OrderBy(x => x.level).ToList();
@@ -260,12 +247,7 @@ namespace ALGADungeon
                 }
             }
 
-            // Return the spanning tree
-            foreach (Edge edge in spanningTree)
-            {
-                Debug.WriteLine("From: " + edge.leftVertex.number + " to: " + edge.rightVertex.number);
-            }
-
+            //Set MST
             MST = spanningTree;
         }
 
@@ -287,6 +269,56 @@ namespace ALGADungeon
             return kRoot;
         }
 
+        public void Grenade()
+        {
+            List<Edge> nearbyEdgesInMst = new List<Edge>();
+
+            //Check all edges
+            if (current.rightEdge != null)
+            {
+                //If in MST add to list
+                if (Vertex.InSpanningTree(current.rightEdge, MST))
+                    nearbyEdgesInMst.Add(current.rightEdge);
+                //Else demolish edge
+                else
+                    current.rightEdge.state = -1;
+            }
+            if (current.leftEdge != null)
+            {
+                if (Vertex.InSpanningTree(current.leftEdge, MST))
+                    nearbyEdgesInMst.Add(current.leftEdge);
+                else
+                    current.leftEdge.state = -1;
+            }
+            if (current.upEdge != null)
+            {
+                if (Vertex.InSpanningTree(current.upEdge, MST))
+                    nearbyEdgesInMst.Add(current.upEdge);
+                else
+                    current.upEdge.state = -1;
+            }
+            if (current.downEdge != null)
+            {
+                if (Vertex.InSpanningTree(current.downEdge, MST))
+                    nearbyEdgesInMst.Add(current.downEdge);
+                else
+                    current.downEdge.state = -1;
+            }
+
+            //Random edge in mst to zero
+            Edge edgeToZero = nearbyEdgesInMst[RandomNumber(0, nearbyEdgesInMst.Count - 1)];
+            edgeToZero.level = 0;
+        }
+
+        public void Nuke()
+        {
+            foreach (Edge edge in edges)
+            {
+                if (!Vertex.InSpanningTree(edge, MST))
+                    edge.state = -1;
+            }
+        }
+
         public void Print(Vertex v)
         {
             Console.WriteLine(xRoomTop + "\n" + xRoomUp);
@@ -295,7 +327,6 @@ namespace ALGADungeon
 
             if (v.downEdge != null)
             {
-                //Console.WriteLine(xEdges + "\n" + v.PrintEdge() + "\n" + xEdges);
                 Console.WriteLine(xEdges);
                 v.PrintEdge(MST);
                 Console.WriteLine("\n" + xEdges);

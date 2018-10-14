@@ -72,9 +72,19 @@ namespace ConsoleApp1
             {
                 Console.Write("    " + printState);
                 Console.ResetColor();
+
                 if (InSpanningTree(rightEdge, MST))
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.Write("    ___" + rightEdge.level + "___");
+
+                if (rightEdge.state == -1)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("    ___" + "~" + "___");
+                    Console.ResetColor();
+                }
+                else
+                    Console.Write("    ___" + rightEdge.level + "___");
+
                 Console.ResetColor();
                 rightEdge.rightVertex.Print(MST);
             }
@@ -91,7 +101,16 @@ namespace ConsoleApp1
             {
                 if(InSpanningTree(downEdge, MST))
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.Write("   |" + downEdge.level + "|          ");
+
+                if (downEdge.state == -1)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("   |" + "~" + "|          ");
+                    Console.ResetColor();
+                }
+                else
+                    Console.Write("   |" + downEdge.level + "|          ");
+
                 Console.ResetColor();
                 rightEdge.rightVertex.PrintEdge(MST);
             }
@@ -99,12 +118,20 @@ namespace ConsoleApp1
             {
                 if (InSpanningTree(downEdge, MST))
                     Console.ForegroundColor = ConsoleColor.Magenta;
-                Console.Write("   |" + downEdge.level + "|");
+
+                if (downEdge.state == -1)
+                {
+                    Console.ForegroundColor = ConsoleColor.DarkRed;
+                    Console.Write("   |" + "~" + "|");
+                    Console.ResetColor();
+                }
+                else
+                    Console.Write("   |" + downEdge.level + "|");
                 Console.ResetColor();
             }
         }
 
-        public bool InSpanningTree(Edge edge, List<Edge> MST)
+        public static bool InSpanningTree(Edge edge, List<Edge> MST)
         {
             foreach (Edge e in MST)
             {

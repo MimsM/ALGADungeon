@@ -33,6 +33,25 @@ namespace ALGADungeon
 
                             //Redraw level
                             DrawLevel(graph);
+
+                            if (graph.current.state == 4)
+                            {
+                                WonGame();
+
+                                string playerInput2 = Console.ReadLine();
+
+                                switch (playerInput2)
+                                {
+                                    case "yes":
+                                        Console.Clear();
+                                        graph = Init();
+                                        break;
+
+                                    case "no":
+                                        Environment.Exit(0);
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
@@ -50,6 +69,25 @@ namespace ALGADungeon
 
                             //Redraw level
                             DrawLevel(graph);
+
+                            if (graph.current.state == 4)
+                            {
+                                WonGame();
+
+                                string playerInput2 = Console.ReadLine();
+
+                                switch (playerInput2)
+                                {
+                                    case "yes":
+                                        Console.Clear();
+                                        graph = Init();
+                                        break;
+
+                                    case "no":
+                                        Environment.Exit(0);
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
@@ -67,6 +105,25 @@ namespace ALGADungeon
 
                             //Redraw level
                             DrawLevel(graph);
+
+                            if (graph.current.state == 4)
+                            {
+                                WonGame();
+
+                                string playerInput2 = Console.ReadLine();
+
+                                switch (playerInput2)
+                                {
+                                    case "yes":
+                                        Console.Clear();
+                                        graph = Init();
+                                        break;
+
+                                    case "no":
+                                        Environment.Exit(0);
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
@@ -84,6 +141,25 @@ namespace ALGADungeon
 
                             //Redraw level
                             DrawLevel(graph);
+
+                            if (graph.current.state == 4)
+                            {
+                                WonGame();
+
+                                string playerInput2 = Console.ReadLine();
+
+                                switch (playerInput2)
+                                {
+                                    case "yes":
+                                        Console.Clear();
+                                        graph = Init();
+                                        break;
+
+                                    case "no":
+                                        Environment.Exit(0);
+                                        break;
+                                }
+                            }
                         }
                         else
                         {
@@ -124,6 +200,14 @@ namespace ALGADungeon
             //Print graph
             graph.Print(graph.root);
             Console.WriteLine("\n");
+        }
+
+        private static void WonGame()
+        {
+            Console.ResetColor();
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.WriteLine("Congratulations! You have reached the endpoint!\nDo you want to play again? (yes/no)\n");
+            Console.ResetColor();
         }
 
         private static Graph Init()

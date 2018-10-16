@@ -4,7 +4,6 @@ using System.Diagnostics;
 using System.Linq;
 using System.Security;
 using System.Text;
-using ConsoleApp1;
 
 namespace ALGADungeon
 {
@@ -24,7 +23,6 @@ namespace ALGADungeon
         public String xRoomTop = "";
         public String xRoomUp = "";
         public String xRoomDown = "";
-        public String xRoomBottom2 = "";
 
         public Graph()
         {
@@ -267,6 +265,189 @@ namespace ALGADungeon
             }
 
             return kRoot;
+        }
+
+        public List<Vertex> Dijkstra()
+        {
+            Dictionary<Vertex, Dictionary<Vertex, int>> dijkstraVertices = new Dictionary<Vertex, Dictionary<Vertex, int>>();
+
+            var previous = new Dictionary<Vertex, Vertex>();
+            var distances = new Dictionary<Vertex, int>();
+            var nodes = new List<Vertex>();
+
+            //create list of all vertices with their neighbours and level of enemies
+            foreach (var vertex in vertices)
+            {
+                var neighbours = new Dictionary<Vertex, int>();
+
+                if (vertex.leftEdge != null && vertex.leftEdge.state != -1)
+                {
+                    neighbours.Add(vertex.leftEdge.leftVertex, vertex.leftEdge.level);
+                }
+
+                if (vertex.upEdge != null && vertex.upEdge.state != -1)
+                {
+                    neighbours.Add(vertex.upEdge.leftVertex, vertex.upEdge.level);
+                }
+
+                if (vertex.rightEdge != null && vertex.rightEdge.state != -1)
+                {
+                    neighbours.Add(vertex.rightEdge.rightVertex, vertex.rightEdge.level);
+                }
+
+                if (vertex.downEdge != null && vertex.downEdge.state != -1)
+                {
+                    neighbours.Add(vertex.downEdge.rightVertex, vertex.downEdge.level);
+                }
+
+                dijkstraVertices.Add(vertex, neighbours);
+            }
+
+            List<Vertex> path = null;
+
+            //add 0 distance to current vertex, add other max distances and vertexes to lists
+            foreach (var vertex in dijkstraVertices)
+            {
+                if (vertex.Key == current)
+                {
+                    distances[vertex.Key] = 0;
+                }
+                else
+                {
+                    distances[vertex.Key] = int.MaxValue;
+                }
+
+                nodes.Add(vertex.Key);
+            }
+            
+            //check distances to neigbours and create shortest route
+            while (nodes.Count != 0)
+            {
+                nodes.Sort((x, y) => distances[x] - distances[y]);
+
+                var smallest = nodes[0];
+                nodes.Remove(smallest);
+
+                if (smallest == end)
+                {
+                    path = new List<Vertex>();
+                    path.Add(current);
+                    while (previous.ContainsKey(smallest))
+                    {
+                        path.Add(smallest);
+                        smallest = previous[smallest];
+                    }
+
+                    break;
+                }
+
+                if (distances[smallest] == int.MaxValue)
+                {
+                    break;
+                }
+
+                foreach (var neighbour in dijkstraVertices[smallest])
+                {
+                    var alt = distances[smallest] + neighbour.Value;
+                    if (alt < distances[neighbour.Key])
+                    {
+                        distances[neighbour.Key] = alt;
+                        previous[neighbour.Key] = smallest;
+                    }
+                }
+            }
+
+            return path;
+        }
+
+        public string Compass()
+        {
+            List<Vertex> path = Dijkstra();
+
+            string returnString = "Je haalt het kompas uit je zak. Het trilt in je hand en " +
+                                  "projecteert in lichtgevende letters op de muur:\n";
+
+            var enemies = new List<int>();
+
+            List<Vertex> visited = new List<Vertex>();
+            Vertex now = new Vertex(0, "");
+            now = path[0];
+
+            for (var i = 0; i < path.Count-2; i++)
+            {
+                if (now.leftEdge != null && path.Contains(now.leftEdge.leftVertex) && !visited.Contains(now.leftEdge.leftVertex))
+                {
+                    now = now.leftEdge.leftVertex;
+                    returnString += "West - ";
+                    enemies.Add(now.rightEdge.level);
+                    visited.Add(now.rightEdge.rightVertex);
+                }
+                else if(now.upEdge != null && path.Contains(now.upEdge.leftVertex) && !visited.Contains(now.upEdge.leftVertex))
+                {
+                    now = now.upEdge.leftVertex;
+                    returnString += "Noord - ";
+                    enemies.Add(now.downEdge.level);
+                    visited.Add(now.downEdge.rightVertex);
+                }
+                else if (now.rightEdge != null && path.Contains(now.rightEdge.rightVertex) && !visited.Contains(now.rightEdge.rightVertex))
+                {
+                    now = now.rightEdge.rightVertex;
+                    returnString += "Oost - ";
+                    enemies.Add(now.leftEdge.level);
+                    visited.Add(now.leftEdge.leftVertex);
+                }
+                else if (now.downEdge != null && path.Contains(now.downEdge.rightVertex) && !visited.Contains(now.downEdge.rightVertex))
+                {
+                    now = now.downEdge.rightVertex;
+                    returnString += "Zuid - ";
+                    enemies.Add(now.upEdge.level);
+                    visited.Add(now.upEdge.leftVertex);
+                }
+            }
+
+            if (now.leftEdge != null && path.Contains(now.leftEdge.leftVertex) && !visited.Contains(now.leftEdge.leftVertex))
+            {
+                now = now.leftEdge.leftVertex;
+                returnString += "West\n";
+                enemies.Add(now.rightEdge.level);
+            }
+            else if (now.upEdge != null && path.Contains(now.upEdge.leftVertex) && !visited.Contains(now.upEdge.leftVertex))
+            {
+                now = now.upEdge.leftVertex;
+                returnString += "Noord\n";
+                enemies.Add(now.downEdge.level);
+            }
+            else if (now.rightEdge != null && path.Contains(now.rightEdge.rightVertex) && !visited.Contains(now.rightEdge.rightVertex))
+            {
+                now = now.rightEdge.rightVertex;
+                returnString += "Oost\n";
+                enemies.Add(now.leftEdge.level);
+            }
+            else if (now.downEdge != null && path.Contains(now.downEdge.rightVertex) && !visited.Contains(now.downEdge.rightVertex))
+            {
+                now = now.downEdge.rightVertex;
+                returnString += "Zuid\n";
+                enemies.Add(now.upEdge.level);
+            }
+
+            if (enemies.Count > 1)
+            {
+                returnString += enemies.Count + " tegenstanders (";
+            }
+            else
+            {
+                returnString += enemies.Count + " tegenstander (";
+            }
+
+            foreach (var enemy in enemies)
+            {
+                returnString += "level " + enemy + ", ";
+            }
+
+            returnString = returnString.Substring(0, returnString.Length - 2);
+            returnString += ")\n";
+
+            return returnString;
         }
 
         public void Grenade()

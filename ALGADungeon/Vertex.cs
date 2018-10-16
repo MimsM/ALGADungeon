@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Threading;
 
-namespace ConsoleApp1
+namespace ALGADungeon
 {
     class Vertex
     {

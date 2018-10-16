@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 
 namespace ALGADungeon
 {
@@ -13,7 +14,7 @@ namespace ALGADungeon
             {
                 Console.WriteLine("Console acties: quit, reset, nuke \n" +
                                   "Game acties: right, left, down, up \n" +
-                                  "Items: talisman, handgranaat");
+                                  "Items: talisman, handgranaat, kompas");
                 string playerInput = Console.ReadLine();
 
                 switch (playerInput)
@@ -191,6 +192,12 @@ namespace ALGADungeon
                         Console.WriteLine("De kerker schudt op zijn grondvesten, de tegenstander in een aangrenzende hallway is vermorzeld! \n" +
                             "Een donderend geluid maakt duidelijk dat gedeeltes van de kerker zijn ingestort... \n");
                         break;
+                    case "kompas":
+                        Console.Clear();
+                        DrawLevel(graph);
+
+                        Console.WriteLine(graph.Compass());
+                        break;
                 }
             }
         }
@@ -221,7 +228,7 @@ namespace ALGADungeon
         {
             Console.ResetColor();
             Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Congratulations! You have reached the endpoint!\nDo you want to play again? (yes/no)\n");
+            Console.WriteLine("Congratulations! You have reached the endpoint!\nDo you want to play again? (yes/no) ");
             Console.ResetColor();
         }
 

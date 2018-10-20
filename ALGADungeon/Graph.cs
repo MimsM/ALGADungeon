@@ -363,73 +363,51 @@ namespace ALGADungeon
 
         public string Compass()
         {
-            List<Vertex> path = dijkstra;
+            //Create path in correct order
+            List<Vertex> temp = dijkstra;
+            Vertex[] path = new Vertex[temp.Count];
+            for (int i = temp.Count - 1; i >= 1; i--)
+            {
+                path[temp.Count - i] = temp[i];
+            }
+            path[0] = temp[0];
 
             string returnString = "Je haalt het kompas uit je zak. Het trilt in je hand en " +
                                   "projecteert in lichtgevende letters op de muur:\n";
 
             var enemies = new List<int>();
 
-            List<Vertex> visited = new List<Vertex>();
-            Vertex now = new Vertex(0, "");
-            now = path[0];
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (i > 0)
+                {
+                    Vertex previous = path[i - 1];
+                    Vertex vertexI = path[i];
 
-            for (var i = 0; i < path.Count-2; i++)
-            {
-                if (now.leftEdge != null && path.Contains(now.leftEdge.leftVertex) && !visited.Contains(now.leftEdge.leftVertex))
-                {
-                    now = now.leftEdge.leftVertex;
-                    returnString += "West - ";
-                    enemies.Add(now.rightEdge.level);
-                    visited.Add(now.rightEdge.rightVertex);
-                }
-                else if(now.upEdge != null && path.Contains(now.upEdge.leftVertex) && !visited.Contains(now.upEdge.leftVertex))
-                {
-                    now = now.upEdge.leftVertex;
-                    returnString += "Noord - ";
-                    enemies.Add(now.downEdge.level);
-                    visited.Add(now.downEdge.rightVertex);
-                }
-                else if (now.rightEdge != null && path.Contains(now.rightEdge.rightVertex) && !visited.Contains(now.rightEdge.rightVertex))
-                {
-                    now = now.rightEdge.rightVertex;
-                    returnString += "Oost - ";
-                    enemies.Add(now.leftEdge.level);
-                    visited.Add(now.leftEdge.leftVertex);
-                }
-                else if (now.downEdge != null && path.Contains(now.downEdge.rightVertex) && !visited.Contains(now.downEdge.rightVertex))
-                {
-                    now = now.downEdge.rightVertex;
-                    returnString += "Zuid - ";
-                    enemies.Add(now.upEdge.level);
-                    visited.Add(now.upEdge.leftVertex);
+                    if (previous.rightEdge != null &&  previous.rightEdge.state != -1 && previous.rightEdge.rightVertex.number == vertexI.number)
+                    {
+                        returnString += "Oost - ";
+                        enemies.Add(previous.rightEdge.level);
+                    }
+                    else if (previous.leftEdge != null && previous.leftEdge.state != -1 && previous.leftEdge.leftVertex.number == vertexI.number)
+                    {
+                        returnString += "West - ";
+                        enemies.Add(previous.leftEdge.level);
+                    }
+                    else if (previous.upEdge != null && previous.upEdge.state != -1 && previous.upEdge.leftVertex.number == vertexI.number)
+                    {
+                        returnString += "Noord - ";
+                        enemies.Add(previous.upEdge.level);
+                    }
+                    else
+                    {
+                        returnString += "Zuid - ";
+                        enemies.Add(previous.downEdge.level);
+                    }
                 }
             }
-
-            if (now.leftEdge != null && path.Contains(now.leftEdge.leftVertex) && !visited.Contains(now.leftEdge.leftVertex))
-            {
-                now = now.leftEdge.leftVertex;
-                returnString += "West\n";
-                enemies.Add(now.rightEdge.level);
-            }
-            else if (now.upEdge != null && path.Contains(now.upEdge.leftVertex) && !visited.Contains(now.upEdge.leftVertex))
-            {
-                now = now.upEdge.leftVertex;
-                returnString += "Noord\n";
-                enemies.Add(now.downEdge.level);
-            }
-            else if (now.rightEdge != null && path.Contains(now.rightEdge.rightVertex) && !visited.Contains(now.rightEdge.rightVertex))
-            {
-                now = now.rightEdge.rightVertex;
-                returnString += "Oost\n";
-                enemies.Add(now.leftEdge.level);
-            }
-            else if (now.downEdge != null && path.Contains(now.downEdge.rightVertex) && !visited.Contains(now.downEdge.rightVertex))
-            {
-                now = now.downEdge.rightVertex;
-                returnString += "Zuid\n";
-                enemies.Add(now.upEdge.level);
-            }
+            returnString = returnString.Substring(0, returnString.Length - 3);
+            returnString += "\n";
 
             if (enemies.Count > 1)
             {

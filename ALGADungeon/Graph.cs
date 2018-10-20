@@ -11,6 +11,7 @@ namespace ALGADungeon
     {
         public Vertex root { get; set; }
         public List<Vertex> vertices { get; set; }
+        public List<Vertex> dijkstra { get; set; }
         public List<Edge> edges { get; set; }
         public List<Edge> MST { get; set; }
         public Vertex start { get; set; }
@@ -267,7 +268,7 @@ namespace ALGADungeon
             return kRoot;
         }
 
-        public List<Vertex> Dijkstra()
+        public void Dijkstra()
         {
             Dictionary<Vertex, Dictionary<Vertex, int>> dijkstraVertices = new Dictionary<Vertex, Dictionary<Vertex, int>>();
 
@@ -357,12 +358,12 @@ namespace ALGADungeon
                 }
             }
 
-            return path;
+            dijkstra = path;
         }
 
         public string Compass()
         {
-            List<Vertex> path = Dijkstra();
+            List<Vertex> path = dijkstra;
 
             string returnString = "Je haalt het kompas uit je zak. Het trilt in je hand en " +
                                   "projecteert in lichtgevende letters op de muur:\n";
@@ -503,7 +504,7 @@ namespace ALGADungeon
         public void Print(Vertex v)
         {
             Console.WriteLine(xRoomTop + "\n" + xRoomUp);
-            v.Print(MST);
+            v.Print(MST, dijkstra);
             Console.WriteLine("\n" + xRoomDown + "\n" + xRoomTop);
 
             if (v.downEdge != null)

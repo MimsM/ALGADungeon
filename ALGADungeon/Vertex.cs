@@ -26,11 +26,21 @@ namespace ALGADungeon
             visiting = false;
         }
 
-        public void Print(List<Edge> MST)
+        public void Print(List<Edge> MST, List<Vertex> dijkstra)
         {
             String printState = " ";
-
             Console.ResetColor();
+
+            if (dijkstra.Contains(this))
+            {
+                Console.ForegroundColor = ConsoleColor.DarkYellow;
+                printState = "C";
+            }
+            else
+            {
+                Console.ResetColor();
+            }
+            
             switch (state)
             {
                 case 0:
@@ -86,7 +96,7 @@ namespace ALGADungeon
                     Console.Write("    ___" + rightEdge.level + "___");
 
                 Console.ResetColor();
-                rightEdge.rightVertex.Print(MST);
+                rightEdge.rightVertex.Print(MST, dijkstra);
             }
             else
             {

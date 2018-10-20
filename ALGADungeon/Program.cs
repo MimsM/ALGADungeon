@@ -194,6 +194,8 @@ namespace ALGADungeon
                         break;
                     case "kompas":
                         Console.Clear();
+
+                        graph.Dijkstra();
                         DrawLevel(graph);
 
                         Console.WriteLine(graph.Compass());
@@ -352,6 +354,7 @@ namespace ALGADungeon
             //Clear console and draw level
             Console.Clear();
             graph.MinimumSpanningTree();
+            graph.Dijkstra();
             DrawLevel(graph);
 
             return graph;

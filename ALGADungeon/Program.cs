@@ -214,10 +214,14 @@ namespace ALGADungeon
             Console.WriteLine("E = Room: Eindpunt");
             Console.ForegroundColor = ConsoleColor.Blue;
             Console.WriteLine("X = Room: Hier ben je nu");
+            Console.ForegroundColor = ConsoleColor.DarkYellow;
+            Console.WriteLine("C = onderdeel van goedkoopste route");
             Console.ForegroundColor = ConsoleColor.DarkBlue;
             Console.WriteLine("* = Room: Bezocht");
             Console.ForegroundColor = ConsoleColor.DarkRed;
             Console.WriteLine("~ = Hallway: Ingestort");
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine("0 = Hallway: Level tegenstander(cost) + onderdeel minimum spanning tree");
             Console.ResetColor();
             Console.WriteLine("0 = Hallway: Level tegenstander(cost)\n");
 

@@ -8,9 +8,10 @@ namespace ALGADungeon
         static void Main(string[] args)
         {
             Graph graph = Init();
+            bool gameLoop = true;
 
             //Game loop
-            while (true)
+            while (gameLoop)
             {
                 Console.WriteLine("Console acties: quit, reset, nuke \n" +
                                   "Game acties: right, left, down, up \n" +
@@ -20,7 +21,7 @@ namespace ALGADungeon
                 switch (playerInput)
                 {
                     case "quit":
-                        Environment.Exit(0);
+                        gameLoop = false;
                         break;
                     case "reset":
                         Console.Clear();
@@ -54,7 +55,7 @@ namespace ALGADungeon
                                         break;
 
                                     case "no":
-                                        Environment.Exit(0);
+                                        gameLoop = false;
                                         break;
                                 }
                             }
@@ -90,7 +91,7 @@ namespace ALGADungeon
                                         break;
 
                                     case "no":
-                                        Environment.Exit(0);
+                                        gameLoop = false;
                                         break;
                                 }
                             }
@@ -126,7 +127,7 @@ namespace ALGADungeon
                                         break;
 
                                     case "no":
-                                        Environment.Exit(0);
+                                        gameLoop = false;
                                         break;
                                 }
                             }
@@ -162,7 +163,7 @@ namespace ALGADungeon
                                         break;
 
                                     case "no":
-                                        Environment.Exit(0);
+                                        gameLoop = false;
                                         break;
                                 }
                             }
